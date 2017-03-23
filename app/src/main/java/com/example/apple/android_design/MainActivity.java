@@ -7,6 +7,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
                             new Fruit("香蕉呀",R.drawable.banana),
                             new Fruit("橘子呀",R.drawable.orange),
                             new Fruit("西瓜呀",R.drawable.watermelon),
-                            new Fruit("葡萄呀",R.drawable.pear),
+                            new Fruit("梨子呀",R.drawable.pear),
                             new Fruit("葡萄呀",R.drawable.grape),
                             new Fruit("菠萝呀",R.drawable.pineapple),
                             new Fruit("草莓呀",R.drawable.strawberry),
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
                             new Fruit("芒果呀",R.drawable.mango)    };
     private List<Fruit>fruitList=new ArrayList<>();
     private FruitAdapter adapter;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +54,14 @@ public class MainActivity extends AppCompatActivity {
         adapter=new FruitAdapter(fruitList);
         recyclerView.setAdapter(adapter);
 
-
+        swipeRefreshLayout=(SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshFruits();
+            }
+        });
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toobar);
         setSupportActionBar(toolbar);
@@ -87,6 +97,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void refreshFruits() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    Thread.sleep(1000);
+                }catch (InterruptedException e){
+                   e.printStackTrace();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        initFruit();
+                        adapter.notifyDataSetChanged();
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }
+        }).start();
     }
 
     private void initFruit() {

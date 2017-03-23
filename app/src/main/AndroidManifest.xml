@@ -16,6 +16,9 @@
                 android:label="Fruits"/>
             </intent-filter>
         </activity>
+        <activity android:name=".FruitActivity"
+                    android:theme="@style/FruitActivityTheme">
+        </activity>
     </application>
 
 </manifest>
